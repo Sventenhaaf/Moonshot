@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Moonshot | JS Game</title>
+    <script type="text/javascript" src="changediv.js">
+
+    </script>
+  </head>
+  <body>
+    <h1>Sndbxx - Online Collaboration for non-software Engineers</h1>
+    <p>Mockup - Play around with the sliders!</p>
+    <br>
+    Force Size - [kN] -    0<input id="force" type="range" min="0" max="10" step="0.1" value="" />10<br>
+    Length [m] -    2<input id="length" type="range" min="3" max="15" value="10" />15<br>
+    Force - Position - 0%<input id="pos" type="range" min="0" max="100" value="" />100% of Length<br>
+    Stiffness(EI) -    1*10^6<input id="stiffness" type="range" min="1000000" max="100000000" value="80000000" />100*10^6<br><br>
+
+    <div id="feedback">I shouldn't be here</div>
+
+    <canvas id="canvas" width="600" height="250">This text is displayed if your browser does not support HTML5 Canvas.</canvas><br>
+
+    <p>- Orange Dotted line represents norm / regulation</p>
+    <p>- Grey line represents actual beam deflection</p>
+    <p>- Deflections are exaggerated on purpose</p>
+    <button> Edit and Share this Tool </button>  <br><br>
+    <button> Select Vendor that sells this beam </button>
+  </body>
+</html>
