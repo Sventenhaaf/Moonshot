@@ -29,16 +29,16 @@ function displayCombination(){
  drawCircle(50, 100, 5);
  drawTriangle(50, 100, 20, 20);
  drawTriangle((length * 30) +50, 100, 20, 20);
- drawArrow(50+(length*pos/3.33333), 100, force*6)
+ drawArrow(50+(length*pos/3.33333), 100, force*6);
  setWarning(maxDef-maxNorm, maxDef);
  // console.log(maxDef-maxNorm);
 }
 function setWarning(value, max){
  if (value > 0){
- document.getElementById('feedback').innerHTML = "Deflection is exceeding norm - max actual deflection is " + parseInt(max*10000000) + "mm."
+ document.getElementById('feedback').innerHTML = "Deflection is exceeding norm - max actual deflection is " + parseInt(max*10000000) + "mm.";
  }
  else {
- document.getElementById('feedback').innerHTML = "You're fine - max actual deflection is " + parseInt(max*10000000) + "mm."
+ document.getElementById('feedback').innerHTML = "You're fine - max actual deflection is " + parseInt(max*10000000) + "mm.";
  }
 }
 
@@ -53,8 +53,8 @@ function drawDeflection(force, length, stiffness, pos, color){
  var b = length - a;
 
  for (var i = 0; i < (numSteps*a/length); i++) {
-     var x = i / 10
-    var last = (force*b*x) * (length*length - (x*x) - b*b) / (6*length*stiffness)
+     var x = i / 10;
+    var last = (force*b*x) * (length*length - (x*x) - b*b) / (6*length*stiffness);
     arr.push(last);
     if (last > max){ max = last; }
 }
@@ -157,6 +157,6 @@ function drawArrow(x, y, size){
  context.lineTo(x, y - size);
  context.stroke();
  context.fillStyle = 'red';
- drawTriangle(x, y, size/3, size/-3)
+ drawTriangle(x, y, size/3, size/-3);
 }
 };
