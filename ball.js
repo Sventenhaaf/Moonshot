@@ -197,7 +197,7 @@ window.onload = function()
       ball.draw();
       target.draw();
       trajectory.draw();
-      ctx.strokeStyle = 'purple';
+      // ctx.strokeStyle = 'purple';
       ctx.lineWidth = 5;
       ctx.moveTo(startpoint[0], startpoint[1]);
       ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
@@ -214,7 +214,6 @@ window.onload = function()
     }
     else {
       historicPath = trajectory.path;
-      // debugger
       window.cancelAnimationFrame(raf);
       ball.x = ballOrigins.x;
       ball.y = ballOrigins.y;
