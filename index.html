@@ -8,11 +8,46 @@
     </script>
   </head>
   <body>
-    <h1>Moonshot | Aim for the moon!</h1>
-    Horizontal Velocity  0<input id="horvel" type="range" min="0" max="30" step="0.1" value="" />30<br>
-    Vertical Velocity  0<input id="vervel" type="range" min="0" max="30" step="0.1" value="10" />30<br>
-    Bumping walls  No<input id="bump" type="range" min="0" max="1" value="0" />Yes<br>
-    <button id="shoot"> Shoot! </button> <button id="reset"> Reset! </button> <br><br>
+    <div id="levelnavigation">
+      <br>
+      <table>
+        <tr><h2>Moonshot | Aim for the moon!</h2></tr>
+        <tr>
+          <td id="sliderlabels">
+            Horizontal Velocity<br>
+            Vertical Velocity<br>
+            <!-- Bumping walls -->
+          </td>
+          <td>
+            0&nbsp;&nbsp;<input id="horvel" type="range" min="0" max="30" step="0.1" value="20" />100<br>
+            0&nbsp;&nbsp;<input id="vervel" type="range" min="0" max="30" step="0.1" value="20" />100<br>
+            <!-- No<input id="bump" type="range" min="0" max="1" value="0" />Yes -->
+          </td>
+          <td class="spacing"></td>
+          <td>
+            <button class="btn" id="shoot"> Shoot! </button> <br>
+          </td>
+          <td class="spacing">
+          <td>
+            <button class="btn" id="reset"> Reset! </button> <br>
+          </td>
+          <td class="spacing"></td></td><td class="spacing"></td><td class="spacing"></td>
+          <td>
+            <button class="navbtn">Previous</button>
+          </td>
+          <td class="spacing"></td>
+          <td>
+            Level 1
+          </td>
+          <td class="spacing"></td>
+          <td>
+            <button class="navbtn">Next</button>
+          </td>
+        </tr>
+
+      </table>
+
+
     <canvas id="canvas" width="1300" height="600" >This text is displayed if your browser does not support HTML5 Canvas.</canvas><br>
 
   </body>

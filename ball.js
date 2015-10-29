@@ -4,9 +4,14 @@ window.onload = function()
   var ctx = canvas.getContext('2d');
   var shootbutton = document.getElementById('shoot');
   var resetbutton = document.getElementById('reset');
-  var bumpingWalls = parseInt(document.getElementById('bump').value);
+  // var bumpingWalls = parseInt(document.getElementById('bump').value);
   var raf;
   var distance;
+  var startpoint;
+  var endpoint;
+  var historicPath;
+
+  var rect = canvas.getBoundingClientRect();
 
   var horizontalVelocity;
   var verticalVelocity;
@@ -16,29 +21,30 @@ window.onload = function()
   horSetter.addEventListener("input", adjustVelocities, false);
   var verSetter = document.getElementById("vervel");
   verSetter.addEventListener("input", adjustVelocities, false);
-  var bump = document.getElementById('bump');
-  bump.addEventListener("input", adjustBumping, false);
+  // var bump = document.getElementById('bump');
+  // bump.addEventListener("input", adjustBumping, false);
 
   function adjustVelocities(){
     horizontalVelocity = parseInt(document.getElementById("horvel").value);
     verticalVelocity = parseInt(document.getElementById("vervel").value);
   }
 
-  function adjustBumping(){
-    if (parseInt(document.getElementById("bump").value) === 0) bumpingWalls = 0;
-    else bumpingWalls = 1;
-  }
+  // function adjustBumping(){
+  //   if (parseInt(document.getElementById("bump").value) === 0) bumpingWalls = 0;
+  //   else bumpingWalls = 1;
+  // }
 
   var ballOrigins = {
-    x: 50,
-    y: 550
+    x: 100,
+    y: 500
   };
 
   var targetDimensions = {
     x: 1050,
     y: 150,
     radius: 30,
-    color: 'blue',
+    mooncolor: 'yellow',
+    hidecolor: '#333'
   };
 
   var trajectory = {
@@ -49,7 +55,7 @@ window.onload = function()
         ctx.beginPath();
         ctx.arc(this.path[i][0], this.path[i][1], 3, 0, Math.PI*2, true);
         ctx.closePath();
-        ctx.fillStyle = 'green';
+        ctx.fillStyle = '#9f9';
         ctx.fill();
       }
     }
@@ -61,7 +67,7 @@ window.onload = function()
     vx: horizontalVelocity,
     vy: -verticalVelocity,
     radius: 15,
-    color: 'orange',
+    color: 'cornflowerblue',
     draw: function() {
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2, true);
@@ -89,12 +95,18 @@ window.onload = function()
     x: targetDimensions.x,
     y: targetDimensions.y,
     radius: targetDimensions.radius,
-    color: targetDimensions.color,
+    mooncolor: targetDimensions.mooncolor,
+    hidecolor: targetDimensions.hidecolor,
     draw: function() {
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2, true);
       ctx.closePath();
-      ctx.fillStyle = this.color;
+      ctx.fillStyle = this.mooncolor;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(this.x + 20, this.y, this.radius, 0, Math.PI*2, true);
+      ctx.closePath();
+      ctx.fillStyle = this.hidecolor;
       ctx.fill();
     }
   };
@@ -125,14 +137,14 @@ window.onload = function()
     planet1.draw();
     trajectory.draw();
 
-    if (bumpingWalls) {
-      if (ball.y > canvas.height || ball.y < 0) {
-        verticalVelocity = -verticalVelocity;
-      }
-      if (ball.x > canvas.width || ball.x < 0) {
-        horizontalVelocity = -horizontalVelocity;
-      }
-    }
+    // if (bumpingWalls) {
+    //   if (ball.y > canvas.height || ball.y < 0) {
+    //     verticalVelocity = -verticalVelocity;
+    //   }
+    //   if (ball.x > canvas.width || ball.x < 0) {
+    //     horizontalVelocity = -horizontalVelocity;
+    //   }
+    // }
 
     // ball.vy *= 1;
     ball.vy += 0.35;
@@ -151,7 +163,6 @@ window.onload = function()
         ball.y < targetDimensions.y + targetDimensions.radius){
           game.win();
         }
-
   }
 
   shootbutton.addEventListener('click', function(e){
@@ -169,6 +180,58 @@ window.onload = function()
     ball.draw();
     target.draw();
   });
+
+  canvas.onmousedown = function(e) {
+    if (startpoint) {
+      startpoint = undefined;
+    }
+    else {
+      startpoint = [e.clientX - rect.left, e.clientY - rect.top];
+    }
+  };
+
+  canvas.onmousemove = function(e) {
+    if (startpoint) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      planet1.draw();
+      ball.draw();
+      target.draw();
+      trajectory.draw();
+      ctx.strokeStyle = 'purple';
+      ctx.lineWidth = 5;
+      ctx.moveTo(startpoint[0], startpoint[1]);
+      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.stroke();
+    }
+  };
+
+  canvas.onmouseup = function(e) {
+    if (startpoint) {
+      endpoint = [e.clientX - rect.left, e.clientY - rect.top];
+      trajectory.path = [ballOrigins.x, ballOrigins.y];
+      shoot(startpoint, endpoint);
+      endpoint = undefined;
+    }
+    else {
+      historicPath = trajectory.path;
+      // debugger
+      window.cancelAnimationFrame(raf);
+      ball.x = ballOrigins.x;
+      ball.y = ballOrigins.y;
+      adjustVelocities();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      planet1.draw();
+      ball.draw();
+      target.draw();
+      trajectory.draw();
+    }
+  };
+
+  function shoot(startpoint, endpoint) {
+    horizontalVelocity = startpoint[0] - endpoint[0];
+    verticalVelocity = endpoint[1] - startpoint[1];
+    raf = window.requestAnimationFrame(draw);
+  }
 
   // canvas.addEventListener('mouseover', function(e){
   //   raf = window.requestAnimationFrame(draw);
