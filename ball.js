@@ -2,37 +2,19 @@ window.onload = function()
 {
   var canvas = document.getElementById('canvas');
   var ctx = canvas.getContext('2d');
-  var shootbutton = document.getElementById('shoot');
-  var resetbutton = document.getElementById('reset');
-  // var bumpingWalls = parseInt(document.getElementById('bump').value);
   var raf;
   var distance;
   var startpoint;
   var endpoint;
+  var midpoint;
   var historicPath;
+  var moving;
 
-  var rect = canvas.getBoundingClientRect();
+  var firstStep;
+  var secondStep;
 
   var horizontalVelocity;
   var verticalVelocity;
-  adjustVelocities();
-
-  var horSetter = document.getElementById("horvel");
-  horSetter.addEventListener("input", adjustVelocities, false);
-  var verSetter = document.getElementById("vervel");
-  verSetter.addEventListener("input", adjustVelocities, false);
-  // var bump = document.getElementById('bump');
-  // bump.addEventListener("input", adjustBumping, false);
-
-  function adjustVelocities(){
-    horizontalVelocity = parseInt(document.getElementById("horvel").value);
-    verticalVelocity = parseInt(document.getElementById("vervel").value);
-  }
-
-  // function adjustBumping(){
-  //   if (parseInt(document.getElementById("bump").value) === 0) bumpingWalls = 0;
-  //   else bumpingWalls = 1;
-  // }
 
   var ballOrigins = {
     x: 100,
@@ -56,6 +38,18 @@ window.onload = function()
         ctx.arc(this.path[i][0], this.path[i][1], 3, 0, Math.PI*2, true);
         ctx.closePath();
         ctx.fillStyle = '#9f9';
+        ctx.fill();
+      }
+    }
+  };
+
+  var newpath = {
+    draw: function() {
+      for (var i = 0; i < newpathArray.length; i++) {
+        ctx.beginPath();
+        ctx.arc(newpathArray[i][0], newpathArray[i][1], Math.sqrt(6*(i+1)), 0, Math.PI*2, true);
+        ctx.closePath();
+        ctx.fillStyle = 'red';
         ctx.fill();
       }
     }
@@ -114,8 +108,15 @@ window.onload = function()
   var game = {
     win: function(){
       window.cancelAnimationFrame(raf);
+      ctx.fillStyle = 'white';
+      ctx.beginPath();
+      ctx.lineWidth="6";
+      ctx.fillStyle = '#333';
+      ctx.fillRect(5,5,580,70);
+      ctx.stroke();
+      ctx.fillStyle = 'white';
       ctx.font = "30px Arial";
-      ctx.fillText("You won the game!",10,50);
+      ctx.fillText("You won! Click next to go to the next level",10,50);
     }
   };
 
@@ -137,16 +138,6 @@ window.onload = function()
     planet1.draw();
     trajectory.draw();
 
-    // if (bumpingWalls) {
-    //   if (ball.y > canvas.height || ball.y < 0) {
-    //     verticalVelocity = -verticalVelocity;
-    //   }
-    //   if (ball.x > canvas.width || ball.x < 0) {
-    //     horizontalVelocity = -horizontalVelocity;
-    //   }
-    // }
-
-    // ball.vy *= 1;
     ball.vy += 0.35;
     gravity();
 
@@ -165,64 +156,54 @@ window.onload = function()
         }
   }
 
-  shootbutton.addEventListener('click', function(e){
-    raf = window.requestAnimationFrame(draw);
-  });
-
-  resetbutton.addEventListener('click', function(e){
-    window.cancelAnimationFrame(raf);
-    ball.x = ballOrigins.x;
-    ball.y = ballOrigins.y;
-    adjustVelocities();
-    trajectory.path = [ballOrigins.x, ballOrigins.y];
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    planet1.draw();
-    ball.draw();
-    target.draw();
-  });
-
   canvas.onmousedown = function(e) {
-    if (startpoint) {
-      startpoint = undefined;
+    if (!!startpoint) {
+      startpoint = null;
     }
     else {
-      startpoint = [e.clientX - rect.left, e.clientY - rect.top];
+      startpoint = [e.clientX, e.clientY];
     }
   };
 
   canvas.onmousemove = function(e) {
-    if (startpoint) {
+    if (startpoint && !moving) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       planet1.draw();
       ball.draw();
       target.draw();
       trajectory.draw();
-      // ctx.strokeStyle = 'purple';
-      ctx.lineWidth = 5;
-      ctx.moveTo(startpoint[0], startpoint[1]);
-      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-      ctx.stroke();
+
+      midpoint = [e.clientX, e.clientY];
+      horizontalVelocity = startpoint[0] - midpoint[0];
+      verticalVelocity = startpoint[1] - midpoint[1];
+      newpathArray = [
+            [ballOrigins.x, ballOrigins.y],
+            [ballOrigins.x + horizontalVelocity, ballOrigins.y + verticalVelocity],
+            [ballOrigins.x + 2*horizontalVelocity, ballOrigins.y + 2*verticalVelocity],
+            [ballOrigins.x + 3*horizontalVelocity, ballOrigins.y + 3*verticalVelocity]];
+      newpath.draw();
     }
   };
 
   canvas.onmouseup = function(e) {
     if (startpoint) {
-      endpoint = [e.clientX - rect.left, e.clientY - rect.top];
+      endpoint = [e.clientX , e.clientY];
       trajectory.path = [ballOrigins.x, ballOrigins.y];
       shoot(startpoint, endpoint);
-      endpoint = undefined;
+      moving = true;
+      endpoint = null;
     }
     else {
       historicPath = trajectory.path;
       window.cancelAnimationFrame(raf);
       ball.x = ballOrigins.x;
       ball.y = ballOrigins.y;
-      adjustVelocities();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       planet1.draw();
       ball.draw();
       target.draw();
       trajectory.draw();
+      moving = false;
     }
   };
 
@@ -231,14 +212,6 @@ window.onload = function()
     verticalVelocity = endpoint[1] - startpoint[1];
     raf = window.requestAnimationFrame(draw);
   }
-
-  // canvas.addEventListener('mouseover', function(e){
-  //   raf = window.requestAnimationFrame(draw);
-  // });
-
-  // canvas.addEventListener('mouseout', function(e){
-  //   window.cancelAnimationFrame(raf);
-  // });
 
   planet1.draw();
   ball.draw();
