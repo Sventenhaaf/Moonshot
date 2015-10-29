@@ -1,10 +1,10 @@
 window.onload = function()
 {
   var canvas = document.getElementById('canvas');
+  var ctx = canvas.getContext('2d');
   var shootbutton = document.getElementById('shoot');
   var resetbutton = document.getElementById('reset');
   var bumpingWalls = parseInt(document.getElementById('bump').value);
-  var ctx = canvas.getContext('2d');
   var raf;
   var distance;
 
@@ -112,12 +112,14 @@ window.onload = function()
             Math.pow(ball.x - planet1.x, 2) +
             Math.pow(ball.y - planet1.y, 2)
         );
-    horizontalVelocity -= 500 * (ball.x - planet1.x) / (distance * distance);
+    horizontalVelocity -= 25 * planet1.radius * (ball.x - planet1.x) / (distance * distance);
     verticalVelocity += 500 * (ball.y - planet1.y) / (distance * distance);
   }
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    var background = new Image();
+
     ball.draw();
     target.draw();
     planet1.draw();
