@@ -1,38 +1,64 @@
-window.onload = function()
-{
+window.onload = function(){
+
   var canvas = document.getElementById('canvas');
   var ctx = canvas.getContext('2d');
   var raf;
+
+  var planets = [
+    {name: "planet1", x: 400, y: 400, radius: 20, color: "#777"},
+    {name: "planet2", x: 800, y: 200, radius: 15, color: "#777"},
+    {name: "planet3", x: 1200, y: 500, radius: 30, color: "#777"}
+  ]
+
+  var planetFunctions = {
+    draw: function(planet) {
+      ctx.beginPath();
+      ctx.arc(planet.x, planet.y, planet.radius, 0, Math.PI*2, true);
+      ctx.closePath();
+      ctx.fillStyle = planet.color;
+      ctx.fill();
+    }
+  };
+
+  var moon = {
+    x: 1050,
+    y: 150,
+    radius: 30,
+    color: 'yellow',
+    hidecolor: '#333',
+    draw: function() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2, true);
+      ctx.closePath();
+      ctx.fillStyle = this.mooncolor;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(this.x + 20, this.y, this.radius, 0, Math.PI*2, true);
+      ctx.closePath();
+      ctx.fillStyle = this.hidecolor;
+      ctx.fill();
+    }
+  };
+
+
   var distance;
   var startpoint;
   var endpoint;
   var midpoint;
   var historicPath;
   var moving;
-
   var firstStep;
   var secondStep;
-
   var horizontalVelocity;
   var verticalVelocity;
-
   var ballOrigins = {
     x: 100,
     y: 500
   };
 
-  var targetDimensions = {
-    x: 1050,
-    y: 150,
-    radius: 30,
-    mooncolor: 'yellow',
-    hidecolor: '#333'
-  };
-
   var trajectory = {
     path: [[ballOrigins.x, ballOrigins.y]],
     draw: function(){
-
       for (var i = 1; i < this.path.length; i++) {
         ctx.beginPath();
         ctx.arc(this.path[i][0], this.path[i][1], 3, 0, Math.PI*2, true);
@@ -91,18 +117,7 @@ window.onload = function()
     radius: targetDimensions.radius,
     mooncolor: targetDimensions.mooncolor,
     hidecolor: targetDimensions.hidecolor,
-    draw: function() {
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2, true);
-      ctx.closePath();
-      ctx.fillStyle = this.mooncolor;
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(this.x + 20, this.y, this.radius, 0, Math.PI*2, true);
-      ctx.closePath();
-      ctx.fillStyle = this.hidecolor;
-      ctx.fill();
-    }
+
   };
 
   var game = {
