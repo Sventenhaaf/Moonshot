@@ -4,43 +4,88 @@ window.onload = function(){
   var ctx = canvas.getContext('2d');
   var raf;
 
-  var planets = [
-    {name: "planet1", x: 400, y: 400, radius: 20, color: "#777"},
-    {name: "planet2", x: 800, y: 200, radius: 15, color: "#777"},
-    {name: "planet3", x: 1200, y: 500, radius: 30, color: "#777"}
-  ]
+  function Circle(input) {
+    this.type = input.type
+    this.name = input.name;
+    this.x = input.x;
+    this.y = input.y;
+    this.radius = input.radius;
+    this.color = input.color;
+  }
+  Circle.prototype.draw = function(){
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2, true);
+    ctx.closePath();
+    ctx.fillStyle = this.color;
+    ctx.fill();
+  }
 
-  var planetFunctions = {
-    draw: function(planet) {
-      ctx.beginPath();
-      ctx.arc(planet.x, planet.y, planet.radius, 0, Math.PI*2, true);
-      ctx.closePath();
-      ctx.fillStyle = planet.color;
-      ctx.fill();
-    }
-  };
+  function Trajectory(x, y) {
+    this.path = [[x, y]];
+  }
+  Trajectory.prototype.add = function(x, y){
+    this.path.push([x, y]);
+  }
+  // Plotting trajectory should be using Circle -
+      // for (var i = 1; i < this.path.length; i++) {
+      //   ctx.beginPath();
+      //   ctx.arc(this.path[i][0], this.path[i][1], 3, 0, Math.PI*2, true);
+      //   ctx.closePath();
+      //   ctx.fillStyle = '#9f9';
+      //   ctx.fill();
+  // Plotting new path should be using Circle -
+      // var newpath = {
+      //   draw: function() {
+      //     for (var i = 0; i < newpathArray.length; i++) {
+      //       ctx.beginPath();
+      //       ctx.arc(newpathArray[i][0], newpathArray[i][1], Math.sqrt(6*(i+1)), 0, Math.PI*2, true);
+      //       ctx.closePath();
+      //       ctx.fillStyle = 'red';
+      //       ctx.fill();
+      //     }
+      //   }
+      // };
 
-  var moon = {
-    x: 1050,
-    y: 150,
-    radius: 30,
-    color: 'yellow',
-    hidecolor: '#333',
-    draw: function() {
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2, true);
-      ctx.closePath();
-      ctx.fillStyle = this.mooncolor;
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(this.x + 20, this.y, this.radius, 0, Math.PI*2, true);
-      ctx.closePath();
-      ctx.fillStyle = this.hidecolor;
-      ctx.fill();
-    }
-  };
+  // Level specific stuff
+  var planet1 = new Circle({
+    type:   "planet",
+    name:   "planet1",
+    x:      400,
+    y:      400,
+    radius: 20,
+    color:  "#777"
+  });
+
+  var moon = new Circle({
+    type:   "moon",
+    name:   "moon",
+    x:      1050,
+    y:      150,
+    radius: 20,
+    color:  "yellow"
+  });
+
+  var moonShadow = new Circle({
+    type:   "moonShadow",
+    name:   "moonShadow",
+    x:      1070,
+    y:      150,
+    radius: 20,
+    color:  "#333"
+  });
+
+  var spaceShip = new Circle({
+    type:   "spaceShip",
+    name:   "spaceShip",
+    x:      100,
+    y:      500,
+    radius: 15,
+    color:  "cornflowerblue"
+  })
 
 
+
+//  --------------------- OLD -------------------
   var distance;
   var startpoint;
   var endpoint;
@@ -51,35 +96,8 @@ window.onload = function(){
   var secondStep;
   var horizontalVelocity;
   var verticalVelocity;
-  var ballOrigins = {
-    x: 100,
-    y: 500
-  };
 
-  var trajectory = {
-    path: [[ballOrigins.x, ballOrigins.y]],
-    draw: function(){
-      for (var i = 1; i < this.path.length; i++) {
-        ctx.beginPath();
-        ctx.arc(this.path[i][0], this.path[i][1], 3, 0, Math.PI*2, true);
-        ctx.closePath();
-        ctx.fillStyle = '#9f9';
-        ctx.fill();
-      }
-    }
-  };
 
-  var newpath = {
-    draw: function() {
-      for (var i = 0; i < newpathArray.length; i++) {
-        ctx.beginPath();
-        ctx.arc(newpathArray[i][0], newpathArray[i][1], Math.sqrt(6*(i+1)), 0, Math.PI*2, true);
-        ctx.closePath();
-        ctx.fillStyle = 'red';
-        ctx.fill();
-      }
-    }
-  };
 
   var ball = {
     x: ballOrigins.x,
